@@ -1,37 +1,114 @@
-## Welcome to GitHub Pages
+# Setting up Directus on your $5 Lightsail Server
 
-You can use the [editor on GitHub](https://github.com/wishcoinmedia/directus/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+## Update Package Manager
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```sh
+sudo apt update
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## Install LAMP stack
 
-### Jekyll Themes
+```sh
+sudo apt install apache2
+sudo apt install mysql-server
+sudo mysql_secure_installation //optional
+sudo apt install php libapache2-mod-php php-pdo php-mysql php-curl php-gd php-fileinfo php-mbstring php-xml
+```
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/wishcoinmedia/directus/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+## Update file permissions
 
-### Support or Contact
+```sh
+sudo chmod -R 755 /var/www
+sudo chown -R ubuntu /var/www
+sudo chown -R www-data:www-data /var/www/directus
+```
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## Install git and clone directus
+
+```sh
+sudo apt install git
+git clone https://github.com/directus/directus.git /var/www/directus
+```
+
+#### Enable rewrite
+
+```sh
+sudo a2enmod rewrite
+sudo systemctl reload apache2
+```
+
+## Configure apache to host directus
+
+```sh
+sudo nano /etc/apache2/sites-available/directus.conf
+```
+
+```httpd
+<VirtualHost \*:80>
+ServerAdmin webmaster@localhost
+ServerName directus.jitendrainfra.com
+DocumentRoot /var/www/directus/public
+
+        <Directory /var/www/directus/public/>
+            Options Indexes FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+        <IfModule mod_dir.c>
+            DirectoryIndex index.php index.pl index.cgi index.html index.xhtml index.htm
+        </IfModule>
+
+</VirtualHost>
+```
+
+```sh
+sudo a2ensite directus.conf
+sudo a2dissite 000-default.conf
+
+sudo rm /etc/apache2/sites-available/000-default.conf
+sudo rm /etc/apache2/sites-available/default-ssl.conf
+
+sudo systemctl reload apache2
+```
+
+## Configure mysql
+
+```sh
+sudo chown -R mysql:mysql /var/lib/mysql
+
+sudo mysql
+```
+
+```sql
+CREATE USER 'directus'@'localhost' IDENTIFIED BY 'OSL@123*';
+GRANT ALL PRIVILEGES ON * . \* TO 'directus'@'localhost';
+FLUSH PRIVILEGES;
+CREATE DATABASE cms;
+\q
+```
+
+## Setup https and allow it through firewall
+
+```sh
+sudo apt install certbot python3-certbot-apache
+sudo certbot --apache
+```
+
+- Go to your website
+- start the setup
+- get the password
+
+## Post Setup
+
+```sh
+mysql -u directus -p
+```
+
+```sql
+USE cms;
+UPDATE directus_users SET token = SECRET_TOKEN WHERE first_name = COMPANY_NAME
+```
