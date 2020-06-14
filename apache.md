@@ -22,13 +22,13 @@ sudo nano /etc/apache2/sites-available/your_domain.com.conf
 sudo a2ensite your_domain.com.conf
 sudo systemctl restart apache2
 ```
-## Go to the ssl config file
+### Go to the ssl config file
 
 ```sh
 sudo nano /etc/apache2/sites-available/your_domain.com-le-ssl.conf
 ```
 
-## Add this below the CustomLog
+### Add this below the CustomLog
 
 ```
 <If "%{HTTP_HOST} != 'your_domain.com'">
