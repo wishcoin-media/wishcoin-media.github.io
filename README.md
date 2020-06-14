@@ -1,9 +1,7 @@
 # Guides
 
-## Directus setup docs
+### Directus Setup Guide [here](directus.md)
 
-- Link [here](DIRECTUS.md)
+### Apache httpd Config Guide [here](apache.md)
 
-## Apache httpd config docs
-
-- Link [here](APACHE.md)
+### Free Online Tools [here](free-online-tools.md)
