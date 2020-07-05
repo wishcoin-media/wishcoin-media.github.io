@@ -3,8 +3,9 @@
 ### Favicons
 - [favicon.io](https://favicon.io/)
 
-### Modify Images
+### Images
 - [Bulk Resize Photos](https://bulkresizephotos.com/en)
+- [Squoosh](https://squoosh.app)
 
 ### Compress Videos
 - [FreeConvert.com](https://www.freeconvert.com/video-compressor)
